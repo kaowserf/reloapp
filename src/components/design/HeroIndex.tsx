@@ -29,7 +29,7 @@ export default function HeroIndex() {
 
         <div className="mb-8 flex flex-wrap items-center gap-3.5">
           <Link
-            href="/dashboard"
+            href="/create"
             className="inline-flex items-center gap-2 rounded-xl px-6 py-[15px] text-[15px] font-bold text-white transition-transform hover:-translate-y-0.5"
             style={{ background: "linear-gradient(135deg,#ff3645,#c4101c)", boxShadow: "0 10px 30px rgba(225,29,42,.45)" }}
           >

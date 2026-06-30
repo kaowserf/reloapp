@@ -6,7 +6,7 @@ type NavItem = { key: string; label: string; href: string; icon: IconKey };
 
 const NAV: NavItem[] = [
   { key: "overview", label: "Overview", href: "/business-center", icon: "home" },
-  { key: "create", label: "Create", href: "/how-it-works", icon: "pen" },
+  { key: "create", label: "Create", href: "/create", icon: "pen" },
   { key: "library", label: "Video Library", href: "/library", icon: "film" },
   { key: "brand", label: "Brand Kit", href: "#", icon: "palette" },
   { key: "assets", label: "Assets", href: "#", icon: "folder" },

@@ -56,6 +56,16 @@
     transform: rotate(360deg);
   }
 }
+/* video-player progress bar (studio preview) */
+@keyframes playbar {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
 /* lub-dub heartbeat brightness for the hero chip circuit */
 @keyframes heartbeat {
   0%,

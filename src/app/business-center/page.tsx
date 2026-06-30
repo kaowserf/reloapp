@@ -28,7 +28,7 @@ const STATS: { icon: IconKey; value: string; label: string }[] = [
 ];
 
 const CARDS: { n: number; icon: IconKey; title: string; desc: string; badge?: string; href?: string }[] = [
-  { n: 1, icon: "pen", title: "Create", desc: "Make amazing videos in minutes.", href: "/how-it-works" },
+  { n: 1, icon: "pen", title: "Create", desc: "Make amazing videos in minutes.", href: "/create" },
   { n: 2, icon: "film", title: "Video Library", desc: "Manage and organize all your creations.", href: "/library" },
   { n: 3, icon: "palette", title: "Brand Kit", desc: "Store your logos, colors, fonts, and brand assets." },
   { n: 4, icon: "folder", title: "Assets", desc: "Access and manage all your media and resources.", badge: "NEW" },

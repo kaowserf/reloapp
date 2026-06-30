@@ -4,7 +4,7 @@ type NavKey = "home" | "create" | "videos" | "trends" | "chat" | "business" | "s
 
 const NAV: { key: NavKey; href: string; title: string; bottom?: boolean; icon: React.ReactNode }[] = [
   { key: "home", href: "/dashboard", title: "Home", icon: <><path d="M3 11l9-8 9 8" /><path d="M5 10v10h14V10" /></> },
-  { key: "create", href: "/how-it-works", title: "Create", icon: <path d="M12 5v14M5 12h14" /> },
+  { key: "create", href: "/create", title: "Create", icon: <path d="M12 5v14M5 12h14" /> },
   { key: "videos", href: "/examples", title: "Videos", icon: <><rect x="3" y="5" width="14" height="14" rx="2" /><path d="M21 7l-4 3 4 3z" /></> },
   { key: "trends", href: "/trends", title: "Trends", icon: <><path d="M3 17l6-6 4 4 8-8" /><path d="M17 7h4v4" /></> },
   { key: "chat", href: "/trends", title: "Chat", icon: <path d="M21 12a8 8 0 0 1-11.5 7.2L4 21l1.8-5.5A8 8 0 1 1 21 12z" /> },

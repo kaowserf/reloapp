@@ -67,7 +67,7 @@ function Step3Card() {
     <div className="rounded-[20px] p-5 sm:p-6" style={card}>
       <div className="mb-4 text-[15px] font-bold">Your Video is Ready!</div>
       <div className="relative mb-4 aspect-video overflow-hidden rounded-xl" style={field}>
-        <Image src="/assets/talking-photo.jpg" alt="" fill sizes="600px" className="object-cover" />
+        <Image src="/assets/the lady in white.png" alt="" fill sizes="600px" className="object-cover" />
         <div className="absolute inset-0 grid place-items-center"><PlayBtn size={60} /></div>
       </div>
       <div className="mb-4 flex items-center gap-3">

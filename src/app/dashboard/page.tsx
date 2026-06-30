@@ -18,13 +18,13 @@ const RECENT = [
   { t: "20 Shorts Pack", m: "Created 3 days ago", img: "/assets/shorts.jpg" },
 ];
 
-const QUICK: { t: string; icon: React.ReactNode; star?: boolean }[] = [
-  { t: "AI Avatar Video", icon: <><circle cx="12" cy="8" r="3.4" /><path d="M5 20a7 7 0 0 1 14 0" /></> },
-  { t: "Talking Photo", icon: <><rect x="3" y="4" width="18" height="14" rx="2" /><circle cx="9" cy="10" r="2" /></> },
-  { t: "Dancing Photo", icon: <><circle cx="12" cy="4" r="2" /><path d="M12 6v6l-3 6m3-6l3 6" /></> },
-  { t: "AI Video", icon: <><rect x="3" y="5" width="14" height="14" rx="2" /><path d="M21 7l-4 3 4 3z" /></> },
-  { t: "Commercial", icon: <path d="M3 11l16-6v14l-16-6z" /> },
-  { t: "20 Shorts from One Prompt", star: true, icon: <path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2 2-5z" /> },
+const QUICK: { t: string; href: string; icon: React.ReactNode; star?: boolean }[] = [
+  { t: "AI Avatar Video", href: "/create/ai-avatar-studio", icon: <><circle cx="12" cy="8" r="3.4" /><path d="M5 20a7 7 0 0 1 14 0" /></> },
+  { t: "Talking Photo", href: "/create/talking-photo", icon: <><rect x="3" y="4" width="18" height="14" rx="2" /><circle cx="9" cy="10" r="2" /></> },
+  { t: "Dancing Photo", href: "/create/dancing-photo", icon: <><circle cx="12" cy="4" r="2" /><path d="M12 6v6l-3 6m3-6l3 6" /></> },
+  { t: "Product Commercial", href: "/create/product-commercial", icon: <><rect x="3" y="5" width="14" height="14" rx="2" /><path d="M21 7l-4 3 4 3z" /></> },
+  { t: "Website Commercial", href: "/create/website-commercial", icon: <path d="M3 11l16-6v14l-16-6z" /> },
+  { t: "20 Shorts from One Prompt", href: "/create/shorts-20", star: true, icon: <path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2 2-5z" /> },
 ];
 
 export default function DashboardPage() {
@@ -80,7 +80,7 @@ export default function DashboardPage() {
             {QUICK.map((q) => (
               <Link
                 key={q.t}
-                href="/how-it-works"
+                href={q.href}
                 className="flex items-center gap-[11px] rounded-[11px] px-3.5 py-3 text-[13.5px] font-semibold transition-all hover:border-[rgba(255,70,85,.45)]"
                 style={q.star ? { border: "1px solid rgba(255,70,85,.3)", background: "radial-gradient(200px 80px at 90% 0,rgba(225,29,42,.18),transparent 70%)", fontWeight: 700 } : { border: "1px solid rgba(255,70,85,.16)" }}
               >
