@@ -137,6 +137,31 @@ a:active {
   transform: none;
 }
 
+/* ---- hero "R" chip: always-on living animation ---- */
+.hero-chip {
+  animation: heroChipFloat 6s ease-in-out infinite,
+    heroChipPulse 3.2s ease-in-out infinite;
+  will-change: transform, filter;
+}
+@keyframes heroChipFloat {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-12px) scale(1.018);
+  }
+}
+@keyframes heroChipPulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 20px rgba(225, 29, 42, 0.22));
+  }
+  50% {
+    filter: drop-shadow(0 0 42px rgba(225, 29, 42, 0.42));
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .reveal {
     opacity: 1;
@@ -146,5 +171,8 @@ a:active {
   button:not(:disabled):active,
   a:active {
     transform: none;
+  }
+  .hero-chip {
+    animation: none;
   }
 }
