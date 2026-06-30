@@ -38,26 +38,10 @@ function Step1Card() {
   );
 }
 function Step2Card() {
-  const selects = [{ l: "Voice", v: "Natural (Female)" }, { l: "Style", v: "Professional" }, { l: "Music", v: "Upbeat Corporate" }];
   return (
-    <div className="rounded-[20px] p-5 sm:p-6" style={card}>
-      <div className="mb-4 text-[15px] font-bold">Customize Your Video</div>
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-[1fr_minmax(0,200px)]">
-        <div className="flex flex-col gap-2.5">
-          {selects.map((s) => (
-            <div key={s.l}>
-              <div className="mb-1 text-xs" style={{ color: "#8e7f81" }}>{s.l}</div>
-              <div className="flex items-center justify-between rounded-[10px] px-3.5 py-2.5 text-sm" style={field}>{s.v}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9a8b8d" strokeWidth="2"><path d="m6 9 6 6 6-6" /></svg></div>
-            </div>
-          ))}
-        </div>
-        <div className="relative aspect-[4/5] overflow-hidden rounded-xl sm:aspect-auto" style={field}>
-          <Image src="/assets/talking-selfie.jpg" alt="" fill sizes="220px" className="object-cover" />
-          <div className="absolute inset-0 grid place-items-center"><PlayBtn /></div>
-        </div>
-      </div>
-      <div className="mt-4 flex items-end gap-[3px]" style={{ filter: "drop-shadow(0 0 5px rgba(225,29,42,.5))" }}>
-        {Array.from({ length: 64 }).map((_, i) => <span key={i} className="flex-1 rounded-sm" style={{ height: `${5 + Math.abs(Math.sin(i * 0.9)) * 22}px`, background: "#ff3645", opacity: 0.55 + Math.abs(Math.sin(i * 0.5)) * 0.45 }} />)}
+    <div className="overflow-hidden rounded-[20px]" style={card}>
+      <div className="relative aspect-[3/2] w-full">
+        <Image src="/assets/edit preview video.png" alt="Customize your video preview" fill sizes="(min-width:1024px) 600px, 100vw" className="object-cover" priority={false} />
       </div>
     </div>
   );

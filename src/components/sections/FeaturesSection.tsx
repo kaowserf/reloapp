@@ -64,7 +64,7 @@ const PHASES = [
 
 function CircleCheck() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="mt-0.5 shrink-0" style={{ filter: "drop-shadow(0 0 5px rgba(225,29,42,.6))" }}>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="mt-0.5 shrink-0" style={{ filter: "drop-shadow(0 0 5px rgba(225,29,42,.6))" }}>
       <circle cx="12" cy="12" r="10" stroke="#ff3645" strokeWidth="1.6" />
       <path d="M8 12l3 3 5-6" stroke="#ff3645" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
@@ -85,15 +85,15 @@ export default function FeaturesSection() {
         </p>
       </section>
 
-      <section className="mx-auto flex max-w-[820px] flex-col gap-5 px-6 pb-2.5 pt-8">
+      <section className="mx-auto flex max-w-[720px] flex-col gap-4 px-6 pb-2.5 pt-8">
         {PHASES.map(({ n, title, Art, items }) => (
-          <div key={n} className="grid grid-cols-1 items-center gap-6 rounded-[22px] p-5 sm:p-6 lg:grid-cols-[210px_1fr]" style={{ border: "1px solid rgba(255,70,85,.35)", background: "linear-gradient(180deg,rgba(28,9,12,.55),rgba(10,5,7,.5))", boxShadow: "0 0 44px -18px rgba(225,29,42,.5),inset 0 0 44px -30px rgba(225,29,42,.5)" }}>
-            <div className="mx-auto aspect-square w-full max-w-[200px]"><Art /></div>
+          <div key={n} className="grid grid-cols-1 items-center gap-5 rounded-[18px] p-4 sm:p-5 lg:grid-cols-[150px_1fr]" style={{ border: "1px solid rgba(255,70,85,.35)", background: "linear-gradient(180deg,rgba(28,9,12,.55),rgba(10,5,7,.5))", boxShadow: "0 0 44px -18px rgba(225,29,42,.5),inset 0 0 44px -30px rgba(225,29,42,.5)" }}>
+            <div className="mx-auto aspect-square w-full max-w-[140px]"><Art /></div>
             <div>
-              <div className="mb-1 text-[13px] font-bold uppercase tracking-[0.16em]" style={{ color: "#ff2d3f" }}>{n}</div>
-              <h3 className="font-display mb-3.5 text-[22px] font-bold tracking-[-0.01em] sm:text-[26px]">{title}</h3>
-              <ul className="grid gap-2.5">
-                {items.map((it) => <li key={it} className="flex items-start gap-2.5 text-[14px]" style={{ color: "#e7dada" }}><CircleCheck />{it}</li>)}
+              <div className="mb-1 text-[12px] font-bold uppercase tracking-[0.16em]" style={{ color: "#ff2d3f" }}>{n}</div>
+              <h3 className="font-display mb-3 text-[19px] font-bold tracking-[-0.01em] sm:text-[22px]">{title}</h3>
+              <ul className="grid gap-2">
+                {items.map((it) => <li key={it} className="flex items-start gap-2 text-[13px]" style={{ color: "#e7dada" }}><CircleCheck />{it}</li>)}
               </ul>
             </div>
           </div>
