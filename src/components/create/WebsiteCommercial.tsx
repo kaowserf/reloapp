@@ -177,12 +177,11 @@ export default function WebsiteCommercial() {
               Website to Commercial AI
             </div>
             <h1 className="font-display text-4xl font-bold leading-[1.05] tracking-[-0.02em] sm:text-5xl">
-              From your URL to a
-              <br />
-              <span style={{ background: "linear-gradient(120deg,#ff4a57,#c4101c)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}>cinematic commercial</span>
+              From URL to{" "}
+              <span style={{ background: "linear-gradient(120deg,#ff4a57,#c4101c)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}>30 days of content</span>
             </h1>
             <p className="mx-auto mt-4 max-w-[520px] text-[16px] leading-[1.6]" style={{ color: "#a99a9c" }}>
-              Reelo scans your website, understands your business, and automatically creates a <strong className="text-white">30-second cinematic commercial</strong>. Review it — then post to social in one click.
+              Reelo analyzes your website, writes 20 video ideas, builds your content calendar, and turns the ideas into videos.
             </p>
 
             <div className="mx-auto mt-8 max-w-[560px] rounded-3xl border border-white/10 bg-black/40 p-5 text-left backdrop-blur-md sm:p-6">
