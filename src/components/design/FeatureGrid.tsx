@@ -17,7 +17,7 @@ const SOCIAL = [
 
 export default function FeatureGrid() {
   return (
-    <section id="features" className="relative z-[4] mx-auto max-w-[1120px] scroll-mt-24 px-6 py-14 sm:px-9">
+    <section className="relative z-[4] mx-auto max-w-[1120px] px-6 py-14 sm:px-9">
       <div className="mb-4 flex items-center justify-center gap-2 text-[12px] font-bold uppercase tracking-[0.2em]" style={{ color: "#ff2d3f" }}>
         <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#ff2d3f", boxShadow: "0 0 10px #ff2d3f" }} />
         Powerful Tools. Endless Possibilities.

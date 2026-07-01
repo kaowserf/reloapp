@@ -79,7 +79,7 @@ export const TOOLS: Tool[] = [
       { kind: "url", name: "url", label: "Website URL", placeholder: "https://yourbrand.com", hint: "We scrape copy, colors, and product shots." },
       { kind: "select", name: "tone", label: "Style", options: ["Cinematic", "Energetic", "Luxury", "Playful", "Minimal"] },
       { kind: "select", name: "ratio", label: "Aspect ratio", options: ["9:16 (Vertical)", "1:1 (Square)", "16:9 (Wide)"] },
-      { kind: "slider", name: "duration", label: "Duration", min: 15, max: 45, step: 15, default: 30, unit: "s" },
+      { kind: "slider", name: "duration", label: "Duration (max 30s)", min: 15, max: 30, step: 15, default: 30, unit: "s" },
     ],
   },
   {

@@ -21,12 +21,38 @@ export default function HeroVideo() {
   const [current, setCurrent] = useState(0);
   const [duration, setDuration] = useState(0);
 
-  // Muted autoplay (required for autoplay to be allowed).
+  // Muted autoplay (required for autoplay to be allowed, esp. on mobile).
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
+    // Force the muted *attribute* (React doesn't always render it) so iOS/Android
+    // will allow inline autoplay.
     v.muted = true;
-    v.play().catch(() => setPlaying(false));
+    v.setAttribute("muted", "");
+    v.defaultMuted = true;
+
+    const tryPlay = () => {
+      v.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
+    };
+    tryPlay();
+    // Retry once the browser has enough data — covers slow mobile connections.
+    v.addEventListener("loadeddata", tryPlay);
+    v.addEventListener("canplay", tryPlay);
+
+    // Re-attempt when the hero scrolls into view (some mobile browsers defer autoplay).
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) if (e.isIntersecting && v.paused) tryPlay();
+      },
+      { threshold: 0.25 },
+    );
+    io.observe(v);
+
+    return () => {
+      v.removeEventListener("loadeddata", tryPlay);
+      v.removeEventListener("canplay", tryPlay);
+      io.disconnect();
+    };
   }, []);
 
   const togglePlay = () => {
@@ -95,6 +121,7 @@ export default function HeroVideo() {
           muted
           loop
           playsInline
+          preload="auto"
           onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
           onTimeUpdate={(e) => setCurrent(e.currentTarget.currentTime)}
           onClick={togglePlay}
