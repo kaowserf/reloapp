@@ -1,6 +1,4 @@
 import { NextResponse } from "next/server";
-import { writeFile, mkdir } from "node:fs/promises";
-import path from "node:path";
 
 export const runtime = "nodejs";
 export const maxDuration = 500;
@@ -71,12 +69,8 @@ export async function POST(req: Request) {
 
     const r = await fetch(`${uri}&key=${encodeURIComponent(key)}`, { signal: AbortSignal.timeout(90000) });
     const buf = Buffer.from(await r.arrayBuffer());
-    const outDir = path.join(process.cwd(), "public", "generated");
-    await mkdir(outDir, { recursive: true });
-    const id = `avatar-${Date.now().toString(36)}`;
-    await writeFile(path.join(outDir, `${id}.mp4`), buf);
 
-    return NextResponse.json({ ok: true, videoUrl: `/generated/${id}.mp4` });
+    return NextResponse.json({ ok: true, videoUrl: `data:video/mp4;base64,${buf.toString("base64")}` });
   } catch (e) {
     return NextResponse.json({ error: e instanceof Error ? e.message : "Generation failed." }, { status: 502 });
   }

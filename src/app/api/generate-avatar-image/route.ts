@@ -1,6 +1,4 @@
 import { NextResponse } from "next/server";
-import { writeFile, mkdir } from "node:fs/promises";
-import path from "node:path";
 
 export const runtime = "nodejs";
 export const maxDuration = 400;
@@ -55,14 +53,9 @@ export async function POST(req: Request) {
     const out = imgPart?.inlineData || imgPart?.inline_data;
     if (!out?.data) return NextResponse.json({ error: "The model did not return an image. Try another photo." }, { status: 502 });
 
-    const buf = Buffer.from(out.data, "base64");
-    const outDir = path.join(process.cwd(), "public", "generated");
-    await mkdir(outDir, { recursive: true });
-    const ext = (out.mimeType || "image/png").includes("jpeg") ? "jpg" : "png";
-    const id = `avatar-${Date.now().toString(36)}`;
-    await writeFile(path.join(outDir, `${id}.${ext}`), buf);
+    const outMimeType = out.mimeType || "image/png";
 
-    return NextResponse.json({ ok: true, imageUrl: `/generated/${id}.${ext}` });
+    return NextResponse.json({ ok: true, imageUrl: `data:${outMimeType};base64,${out.data}` });
   } catch (e) {
     return NextResponse.json({ error: e instanceof Error ? e.message : "Image generation failed." }, { status: 502 });
   }

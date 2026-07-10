@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import { writeFile, mkdir, copyFile } from "node:fs/promises";
+import { writeFile, readFile, mkdir, rm } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import ffmpegStatic from "ffmpeg-static";
@@ -157,8 +157,6 @@ export async function GET() {
 export async function POST(req: Request) {
   const key = process.env.GEMINI_API_KEY;
   if (!key) return NextResponse.json({ error: "GEMINI_API_KEY is not set in .env.local" }, { status: 500 });
-  const ffmpegBin = resolveFfmpeg();
-  if (!ffmpegBin) return NextResponse.json({ error: "ffmpeg binary not found." }, { status: 500 });
 
   let url: string;
   try {
@@ -185,20 +183,22 @@ export async function POST(req: Request) {
       files.push(fp);
     }
 
-    // 4. output — single clip: just copy it; multiple clips: ffmpeg concat.
-    const outDir = path.join(process.cwd(), "public", "generated");
-    await mkdir(outDir, { recursive: true });
-    const id = `${brand.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "commercial"}-${Date.now().toString(36)}`;
-    const outPath = path.join(outDir, `${id}.mp4`);
+    // 4. output — single clip: read it directly; multiple clips: ffmpeg concat first.
+    let finalBuf: Buffer;
     if (files.length === 1) {
-      await copyFile(files[0], outPath);
+      finalBuf = await readFile(files[0]);
     } else {
+      const ffmpegBin = resolveFfmpeg();
+      if (!ffmpegBin) return NextResponse.json({ error: "ffmpeg binary not found." }, { status: 500 });
+      const outPath = path.join(tmpDir, "out.mp4");
       const listPath = path.join(tmpDir, "list.txt");
       await writeFile(listPath, files.map((f) => `file '${f.replace(/\\/g, "/")}'`).join("\n"));
       await execFileP(ffmpegBin, ["-y", "-f", "concat", "-safe", "0", "-i", listPath, "-c", "copy", outPath]);
+      finalBuf = await readFile(outPath);
     }
+    await rm(tmpDir, { recursive: true, force: true });
 
-    return NextResponse.json({ ok: true, brand, scenes, videoUrl: `/generated/${id}.mp4` });
+    return NextResponse.json({ ok: true, brand, scenes, videoUrl: `data:video/mp4;base64,${finalBuf.toString("base64")}` });
   } catch (e) {
     return NextResponse.json({ error: e instanceof Error ? e.message : "Video generation failed." }, { status: 502 });
   }
