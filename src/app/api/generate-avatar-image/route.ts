@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
-export const maxDuration = 400;
+export const maxDuration = 300;
 
 const MODEL = "gemini-2.5-flash-image";
 const BASE = "https://generativelanguage.googleapis.com/v1beta";

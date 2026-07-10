@@ -16,7 +16,7 @@ function resolveFfmpeg(): string | null {
 }
 
 export const runtime = "nodejs";
-export const maxDuration = 800;
+export const maxDuration = 300;
 
 const execFileP = promisify(execFile);
 

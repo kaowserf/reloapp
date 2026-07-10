@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
-export const maxDuration = 500;
+export const maxDuration = 300;
 
 const VEO_MODEL = "veo-3.1-fast-generate-preview";
 const BASE = "https://generativelanguage.googleapis.com/v1beta";
