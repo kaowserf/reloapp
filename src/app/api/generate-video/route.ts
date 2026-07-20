@@ -23,9 +23,31 @@ const execFileP = promisify(execFile);
 // Fast model has a much larger quota than the full preview model; cinematic look
 // comes mostly from the prompt + style directive + negative prompt below.
 const VEO_MODEL = "veo-3.1-fast-generate-preview";
-const CLIP_COUNT = 1; // single 8-second cinematic clip (cheapest — least Veo quota)
+const CLIP_COUNT = 4; // 4 × ~8s cinematic shots → ~30-second commercial (stitched with ffmpeg)
 const BASE = "https://generativelanguage.googleapis.com/v1beta";
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+// Per-user (per-IP) daily cap — best-effort in-memory (resets on cold start;
+// use Vercel KV / Redis for a durable, cross-instance limit in production).
+const DAILY_LIMIT = Number(process.env.VIDEO_DAILY_LIMIT ?? 5);
+type Bucket = { day: string; count: number };
+const buckets = new Map<string, Bucket>();
+function clientId(req: Request): string {
+  const fwd = req.headers.get("x-forwarded-for");
+  return fwd ? fwd.split(",")[0].trim() : req.headers.get("x-real-ip") || "local";
+}
+function consume(id: string): number | null {
+  const day = new Date().toISOString().slice(0, 10);
+  let b = buckets.get(id);
+  if (!b || b.day !== day) { b = { day, count: 0 }; buckets.set(id, b); }
+  if (b.count >= DAILY_LIMIT) return null;
+  b.count += 1;
+  return DAILY_LIMIT - b.count;
+}
+function refund(id: string) {
+  const b = buckets.get(id);
+  if (b) b.count = Math.max(0, b.count - 1);
+}
 
 // Appended to every shot so the whole spot shares one polished, filmic look.
 const CINEMATIC_STYLE =
@@ -158,10 +180,18 @@ export async function POST(req: Request) {
   const key = process.env.GEMINI_API_KEY;
   if (!key) return NextResponse.json({ error: "GEMINI_API_KEY is not set in .env.local" }, { status: 500 });
 
+  // Daily per-user limit.
+  const id = clientId(req);
+  const remainingToday = consume(id);
+  if (remainingToday === null) {
+    return NextResponse.json({ error: `Daily limit reached — up to ${DAILY_LIMIT} videos per day. Try again tomorrow.` }, { status: 429 });
+  }
+
   let url: string;
   try {
     url = normalizeUrl((await req.json()).url);
   } catch {
+    refund(id); // bad request never rendered — give the quota unit back
     return NextResponse.json({ error: "Invalid URL." }, { status: 400 });
   }
 
@@ -189,7 +219,7 @@ export async function POST(req: Request) {
       finalBuf = await readFile(files[0]);
     } else {
       const ffmpegBin = resolveFfmpeg();
-      if (!ffmpegBin) return NextResponse.json({ error: "ffmpeg binary not found." }, { status: 500 });
+      if (!ffmpegBin) { refund(id); return NextResponse.json({ error: "ffmpeg binary not found." }, { status: 500 }); }
       const outPath = path.join(tmpDir, "out.mp4");
       const listPath = path.join(tmpDir, "list.txt");
       await writeFile(listPath, files.map((f) => `file '${f.replace(/\\/g, "/")}'`).join("\n"));
@@ -198,8 +228,9 @@ export async function POST(req: Request) {
     }
     await rm(tmpDir, { recursive: true, force: true });
 
-    return NextResponse.json({ ok: true, brand, scenes, videoUrl: `data:video/mp4;base64,${finalBuf.toString("base64")}` });
+    return NextResponse.json({ ok: true, brand, scenes, remainingToday, videoUrl: `data:video/mp4;base64,${finalBuf.toString("base64")}` });
   } catch (e) {
+    refund(id); // render failed — don't count it against the user's daily limit
     return NextResponse.json({ error: e instanceof Error ? e.message : "Video generation failed." }, { status: 502 });
   }
 }

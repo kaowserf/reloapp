@@ -7,7 +7,7 @@ type Step = "input" | "scanning" | "detected" | "generating" | "result";
 type UploadStage = "connecting" | "uploading" | "posted";
 
 const RESULT_VIDEO = "/assets/hero-video.mp4";
-const MAX_SECONDS = 8; // single cinematic clip length (test mode)
+const MAX_SECONDS = 30; // HeyGen spokesperson commercial cap
 
 const SCAN_TASKS = [
   "Fetching your website…",
@@ -70,6 +70,7 @@ export default function WebsiteCommercial() {
 
   const scanTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const genTimer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pollTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const upTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -116,25 +117,63 @@ export default function WebsiteCommercial() {
     setStep("generating");
     setProgress(0);
     if (genTimer.current) clearInterval(genTimer.current);
-    // Ease toward 95% while the real (multi-minute) render runs.
-    genTimer.current = setInterval(() => setProgress((p) => Math.min(95, p + 1)), 2400);
+    if (pollTimer.current) clearInterval(pollTimer.current);
+    // Ease toward 95% while the real render runs (HeyGen ~1–3 min).
+    genTimer.current = setInterval(() => setProgress((p) => Math.min(95, p + 1)), 1500);
+
+    // HeyGen renders a spokesperson presenting the AI-written script.
+    const finalScript = script.trim() || `${brand}. ${about}`.trim();
+
     try {
-      const res = await fetch("/api/generate-video", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url }) });
+      // 1. Kick off the HeyGen render (returns a video id immediately).
+      const res = await fetch("/api/heygen-video", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ script: finalScript }),
+      });
       const data = await res.json();
-      if (genTimer.current) clearInterval(genTimer.current);
       if (!res.ok || !data.ok) throw new Error(data.error || "Video generation failed.");
-      setVideoUrl(data.videoUrl);
+      const videoId = data.videoId as string;
+
+      // 2. Poll our status endpoint until HeyGen finishes.
+      const finalUrl = await new Promise<string>((resolve, reject) => {
+        let tries = 0;
+        pollTimer.current = setInterval(async () => {
+          if (++tries > 168) { // ~14 min safety guard (HeyGen's trial queue can be slow)
+            if (pollTimer.current) clearInterval(pollTimer.current);
+            reject(new Error("Video is taking too long — please try again."));
+            return;
+          }
+          try {
+            const r = await fetch(`/api/heygen-video?video_id=${videoId}`);
+            const d = await r.json();
+            if (d.status === "completed" && d.videoUrl) {
+              if (pollTimer.current) clearInterval(pollTimer.current);
+              resolve(d.videoUrl as string);
+            } else if (d.status === "failed") {
+              if (pollTimer.current) clearInterval(pollTimer.current);
+              reject(new Error(d.error?.detail || d.error?.message || "Generation failed on HeyGen."));
+            }
+          } catch {
+            /* transient network blip — keep polling */
+          }
+        }, 5000);
+      });
+
+      if (genTimer.current) clearInterval(genTimer.current);
+      setVideoUrl(finalUrl);
       setProgress(100);
       setStep("result");
     } catch (e) {
       if (genTimer.current) clearInterval(genTimer.current);
+      if (pollTimer.current) clearInterval(pollTimer.current);
       setErr(e instanceof Error ? e.message : "Video generation failed.");
       setStep("detected");
     }
   };
 
   const startOver = () => {
-    [scanTimer, genTimer, upTimer].forEach((t) => t.current && clearInterval(t.current));
+    [scanTimer, genTimer, pollTimer, upTimer].forEach((t) => t.current && clearInterval(t.current));
     setStep("input");
     setUrl("");
     setProgress(0);
@@ -368,7 +407,7 @@ export default function WebsiteCommercial() {
               <video ref={videoRef} src={videoUrl || RESULT_VIDEO} className="absolute inset-0 h-full w-full object-cover" autoPlay muted loop playsInline />
               {!upload && (
                 <div className="absolute inset-x-0 bottom-0 flex items-center justify-between p-3">
-                  <span className="rounded-md px-2 py-1 text-[11px] font-semibold text-white" style={{ background: "rgba(10,6,8,.6)", backdropFilter: "blur(4px)" }}>0:0{MAX_SECONDS} · {style}</span>
+                  <span className="rounded-md px-2 py-1 text-[11px] font-semibold text-white" style={{ background: "rgba(10,6,8,.6)", backdropFilter: "blur(4px)" }}>0:{String(MAX_SECONDS).padStart(2, "0")} · {style}</span>
                   <button onClick={toggleMute} aria-label={muted ? "Unmute" : "Mute"} className="grid h-9 w-9 place-items-center rounded-full text-white" style={{ background: "rgba(10,6,8,.6)", backdropFilter: "blur(4px)" }}>
                     {muted ? (
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5z" /><path d="M22 9l-6 6M16 9l6 6" /></svg>
